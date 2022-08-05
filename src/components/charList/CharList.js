@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -15,7 +15,24 @@ class CharList extends Component {
         error: false,
         newItemLoading: false,
         offset: 1541,
-        charEnded: false
+        charEnded: false,
+        lastIdToFocus: 0
+    }
+
+    charRef = [];
+
+    setCharRef = (ref) => {
+        this.charRef.push(ref);
+    }
+
+    focusOnChar = (id) => {
+        this.charRef[this.state.lastIdToFocus].classList.remove('char__item_selected');
+        this.setState({
+            lastIdToFocus: id
+        })
+        this.charRef[id].classList.add('char__item_selected');
+        this.charRef[id].focus();
+        console.log(this.charRef);
     }
 
     marvelService = new MarvelService();
@@ -57,7 +74,7 @@ class CharList extends Component {
     }
 
     renderItems(arr) {              //метод для оптимизации, чтобы не помещать в render
-        const items = arr.map((item) => {
+        const items = arr.map((item, i) => {
             // console.log(item);
             let imgStyle = {'objectFit': 'cover'};
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
@@ -68,7 +85,11 @@ class CharList extends Component {
                 <li 
                     className="char__item"
                     key={item.id}
-                    onClick={() => this.props.onCharSelected(item.id)}>
+                    ref={this.setCharRef}
+                    onClick={() => {
+                        this.props.onCharSelected(item.id);
+                        this.focusOnChar(i);
+                    }}>
                     <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
                     <div className="char__name">{item.name}</div>
                 </li>
@@ -110,7 +131,7 @@ class CharList extends Component {
 }
 
 CharList.propTypes = {
-    onCharSelected: PropTypes.number
+    onCharSelected: PropTypes.func
 }
 
 export default CharList;
