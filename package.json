@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "prop-types": "^15.8.1",
+    "react-transition-group": "^4.4.5",
     "sass": "^1.54.0",
     "scss": "^0.2.4"
   }
