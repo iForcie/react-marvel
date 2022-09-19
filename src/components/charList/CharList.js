@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {TransitionGroup, CSSTransition} from 'react-transition-group';
 import PropTypes from 'prop-types';
 
@@ -39,10 +39,10 @@ const CharList = (props) => {
         setLastIdToFocus(lastIdToFocus => id);
         charRef[id].classList.add('char__item_selected');
         charRef[id].focus();
-        console.log(charRef);
+        // console.log(charRef);
     }
 
-    const {loading, error, process, setProcess, getAllCharacters} = useMarvelService();
+    const {process, setProcess, getAllCharacters} = useMarvelService();
 
     useEffect(() => {
         onRequest(offset, true);
@@ -68,6 +68,7 @@ const CharList = (props) => {
     }
 
     function renderItems(arr) {              //метод для оптимизации, чтобы не помещать в render
+        console.log('render');
         const items = arr.map((item, i) => {
             let imgStyle = {'objectFit': 'cover'};
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
@@ -106,9 +107,13 @@ const CharList = (props) => {
     // const errorMessage = error ? <ErrorMessage /> : null;
     // const spinner = loading && !newItemLoading ? <Spinner /> : null;
 
+    const elements = useMemo(() => {
+        return setContent(process, () => renderItems(charList), newItemLoading)
+    }, [process]);
+
     return (
         <div className="char__list">
-            {setContent(process, () => renderItems(charList), newItemLoading)}
+            {elements}
             <button 
                 className="button button__main button__long"
                 disabled={newItemLoading}
